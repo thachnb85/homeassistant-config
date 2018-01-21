@@ -1,11 +1,83 @@
 homeassistant:
-  name: Home
-  latitude: !secret home_latitude
-  longitude: !secret home_longitude
-  elevation: 22
-  unit_system: imperial
-  time_zone: America/New_York
-  customize: !include_dir_merge_named customize
+  customize:
+    script.roku_button:
+      custom_ui_state_card: state-card-tiles
+      config:
+        columns: 3
+        column_width: 75px
+        row_height: 75px
+        entities:
+          - entity: script.roku_button
+            icon: mdi:power
+            column_span: 3
+            data: { button: power }
+          - entity: script.roku_button
+            icon: mdi:backburger
+            data: { button: back }
+          - entity: script.roku_button
+            icon: mdi:home-outline
+            column: 3
+            data: { button: home }
+          - entity: script.roku_button
+            icon: mdi:arrow-up-thick
+            column: 2
+            data: { button: up }
+          - entity: script.roku_button
+            icon: mdi:arrow-left-thick
+            column: 1
+            data: { button: left}
+          - entity: script.roku_button
+            label: "OK"
+            column: 2
+            data: { button: select }
+          - entity: script.roku_button
+            icon: mdi:arrow-right-thick
+            column: 3
+            data: { button: right }
+          - entity: script.roku_button
+            icon: mdi:arrow-down-thick
+            column: 2
+            data: { button: down }
+          - entity: script.roku_button
+            icon: mdi:replay
+            column: 1
+            data: { button: replay }
+          - entity: script.roku_button
+            icon: mdi:information-outline
+            column: 3
+            data: { button: info }
+          - entity: script.roku_button
+            icon: mdi:rewind
+            column: 1
+            data: { button: reverse }
+          - entity: script.roku_button
+            icon: mdi:play-pause
+            column: 2
+            data: { button: play }
+          - entity: script.roku_button
+            icon: mdi:fast-forward
+            column: 3
+            data: { button: forward }
+          - entity: script.roku_button
+            icon: mdi:volume-plus
+            column: 4
+            column_span: 1
+            row: 1
+            row_span: 2
+            data: { button: volume_up }
+          - entity: script.roku_button
+            icon: mdi:volume-minus
+            column: 4
+            column_span: 1
+            row: 3
+            row_span: 2
+            data: { button: volume_down }
+          - entity: script.roku_button
+            icon: mdi:volume-mute
+            column: 4
+            column_span: 1
+            row: 5
+            data: { button: volume_mute }
 
 frontend:
   extra_html_url:
@@ -13,93 +85,21 @@ frontend:
   extra_html_url_es5:
     - /local/custom_ui/state-card-tiles.html
 
-config:
+group: 
+  Living Room TV:
+    entities:
+      - script.roku_button
 
-http:
-  api_password: !secret http_password
-  ssl_certificate: /ssl/fullchain.pem
-  ssl_key: /ssl/privkey.pem
-  base_url: !secret base_url
-
-# Checks for available updates
-updater:
-  include_used_components: true
-# Discover some devices automatically
-discovery:
-# Allows you to issue voice commands from the frontend in enabled browsers
-conversation:
-# Enables support for tracking state changes over time.
-history:
-# View all events in a logbook
-logbook:
-recorder:
-  purge_interval: 2
-  purge_keep_days: 14
-
-sun:
-
-automation: !include_dir_merge_list automation
-group: !include ./configuration/group.yaml
-notify: !include ./configuration/notify.yaml
-scene: !include_dir_merge_list scene
-sensor: !include ./configuration/sensor.yaml
-script: !include_dir_merge_named script
-
-# Text to speech
-tts:
-  platform: google
-
-zwave:
-  usb_path: /dev/ttyACM0
-
-mqtt:
-  broker: core-mosquitto
-  username: !secret mqtt_user
-  password: !secret mqtt_password
-
-switch:
-  - platform: rpi_rf
-    gpio: 18
-    switches:
-      aux1:
-        pulselength: 190
-        code_on: 349955
-        code_off: 349964
-      aux2:
-        pulselength: 190
-        code_on: 349635
-        code_off: 349644
-
-binary_sensor:
-  - platform: rpi_gpio
-    ports:
-      17: PIR Living Room
-
-device_tracker:
-  - platform: nmap_tracker
-    hosts: 192.168.0.100-140
-    scan_options: " -sn "
-
-hdmi_cec:
-  devices:
-    TV: 0.0.0.0
-
-light:
-  - platform: flux_led
-    automatic_add: True
-
-google_assistant:
-  project_id: soberstadt
-  client_id: !secret google_client_id
-  access_token: !secret google_access_token
-  exposed_domains:
-    - switch
-    - light
+script:
+  roku_button:
+    sequence:
+      service: roku_remote.press_button
+      data_template:
+        button: "{{ button }}"
+python_script:
 
 input_text:
   roku_remote_ip:
     name: Roku Remote IP
 
 roku_remote:
-
-python_script:

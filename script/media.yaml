@@ -1,5 +1,0 @@
-roku_button:
-  sequence:
-    service: roku_remote.press_button
-    data_template:
-      button: "{{ button }}"
